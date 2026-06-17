@@ -2,64 +2,68 @@ backend:
   name: git-gateway
   branch: main # تأكد أن هذا هو اسم الفرع الرئيسي لديك على جيتهاب
 
-# ----------------------------------------------------
-# إعدادات مجلد الصور (حيث سيتم حفظ الصور المرفوعة)
-# ----------------------------------------------------
 media_folder: "images"
 public_folder: "/images"
 
-# ----------------------------------------------------
-# الأقسام والبيانات (Collections)
-# ----------------------------------------------------
 collections:
+  # المجموعة الأولى: إعدادات الموقع والتواصل
   - name: "site_info"
     label: "إعدادات الموقع والتواصل"
-    file: "content/site.json"
-    fields:
-      - {label: "رقم الهاتف", name: "phone", widget: "string"}
-      - {label: "رابط فيسبوك", name: "facebook", widget: "string"}
-      - {label: "رابط انستغرام", name: "instagram", widget: "string"}
+    delete: false # لمنع حذف الملف بالخطأ
+    files:
+      - name: "general_settings"
+        label: "البيانات العامة للمطعم"
+        file: "content/site.json"
+        fields:
+          - {label: "رقم الهاتف", name: "phone", widget: "string"}
+          - {label: "رابط فيسبوك", name: "facebook", widget: "string"}
+          - {label: "رابط انستغرام", name: "instagram", widget: "string"}
 
+  # المجموعة الثانية: المنيو (الأقسام والأصناف)
   - name: "menu_data"
     label: "المنيو (الأقسام والأصناف)"
-    file: "content/menu.json"
-    fields:
-      - label: "الأقسام الرئيسية"
-        name: "categories"
-        widget: "list"
+    delete: false
+    files:
+      - name: "chicken_menu"
+        label: "قائمة طعام فلو تشيكن"
+        file: "content/menu.json"
         fields:
-          - {label: "المعرف (بالانجليزي بدون مسافات)", name: "id", widget: "string"}
-          - {label: "عنوان القسم", name: "title", widget: "string"}
-          - {label: "الأيقونة (مثال: svg_shawarma أو fa-burger)", name: "icon", widget: "string"}
-          - {label: "صورة القسم الرئيسي (اختياري)", name: "image", widget: "image", required: false} # زر رفع صورة القسم
-          
-          # الأصناف المباشرة
-          - label: "الأصناف"
-            name: "items"
+          - label: "الأقسام الرئيسية"
+            name: "categories"
             widget: "list"
-            required: false
             fields:
-              - {label: "اسم الصنف", name: "name", widget: "string"}
-              - {label: "السعر", name: "price", widget: "number", required: false}
-              - {label: "صورة الصنف (اختياري)", name: "image", widget: "image", required: false} # زر رفع صورة الصنف
-              - {label: "أكثر مبيعاً؟", name: "bestseller", widget: "boolean", default: false, required: false}
-              - {label: "تحديد سعر مخصص (للفَرط)؟", name: "customPrice", widget: "boolean", default: false, required: false}
-          
-          # الأقسام الفرعية
-          - label: "الأقسام الفرعية"
-            name: "subCategories"
-            widget: "list"
-            required: false
-            fields:
-              - {label: "المعرف", name: "id", widget: "string"}
-              - {label: "العنوان", name: "title", widget: "string"}
-              - {label: "الأيقونة", name: "icon", widget: "string"}
-              - {label: "صورة القسم الفرعي (اختياري)", name: "image", widget: "image", required: false} # زر رفع صورة القسم الفرعي
-              - label: "الأصناف الفرعية"
+              - {label: "المعرف (بالانجليزي بدون مسافات)", name: "id", widget: "string"}
+              - {label: "عنوان القسم", name: "title", widget: "string"}
+              - {label: "الأيقونة (مثال: svg_shawarma أو fa-burger)", name: "icon", widget: "string"}
+              - {label: "صورة القسم الرئيسي (اختياري)", name: "image", widget: "image", required: false}
+              
+              # الأصناف المباشرة داخل القسم
+              - label: "الأصناف التابعة للقسم مباشرة"
                 name: "items"
                 widget: "list"
+                required: false
                 fields:
                   - {label: "اسم الصنف", name: "name", widget: "string"}
                   - {label: "السعر", name: "price", widget: "number", required: false}
-                  - {label: "صورة الصنف الفرعي (اختياري)", name: "image", widget: "image", required: false} # زر رفع صورة الصنف الفرعي
+                  - {label: "صورة الصنف (اختياري)", name: "image", widget: "image", required: false}
                   - {label: "أكثر مبيعاً؟", name: "bestseller", widget: "boolean", default: false, required: false}
+                  - {label: "تحديد سعر مخصص (للفَرط)؟", name: "customPrice", widget: "boolean", default: false, required: false}
+              
+              # الأقسام الفرعية (مثل الوجبات / السندويشات)
+              - label: "الأقسام الفرعية (إن وجدت)"
+                name: "subCategories"
+                widget: "list"
+                required: false
+                fields:
+                  - {label: "المعرف الفرعي", name: "id", widget: "string"}
+                  - {label: "العنوان", name: "title", widget: "string"}
+                  - {label: "الأيقونة", name: "icon", widget: "string"}
+                  - {label: "صورة القسم الفرعي (اختياري)", name: "image", widget: "image", required: false}
+                  - label: "الأصناف الفرعية"
+                    name: "items"
+                    widget: "list"
+                    fields:
+                      - {label: "اسم الصنف", name: "name", widget: "string"}
+                      - {label: "السعر", name: "price", widget: "number", required: false}
+                      - {label: "صورة الصنف الفرعي (اختياري)", name: "image", widget: "image", required: false}
+                      - {label: "أكثر مبيعاً؟", name: "bestseller", widget: "boolean", default: false, required: false}
