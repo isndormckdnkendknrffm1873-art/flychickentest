@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة تحكم Fly Chicken</title>
+  <!-- سكربت الهوية لتسجيل الدخول -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <!-- تضمن هذه المكتبة تشغيل لوحة التحكم فوراً وتمنع ظهور الشاشة البيضاء -->
+  <script src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"></script>
+  
+  <script>
+    // التأكد من تهيئة النظام بعد تحميل المكتبة مباشرة لضمان قراءة config.yml
+    CMS.init();
+  </script>
+</body>
+</html>
