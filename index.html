@@ -83,6 +83,13 @@
 
         .card-main { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; transition: transform 0.4s var(--spring); z-index: 2; }
         
+        /* تنسيق الصور المرفوعة لتظهر بشكل لائق ومتناسق داخل المربعات */
+        .card-img-display {
+            width: 75px; height: 75px; border-radius: 14px; object-fit: cover; margin-bottom: 8px;
+            border: 2px solid var(--border-thick); box-shadow: 0 3px 0 var(--border-thick); transition: transform 0.4s var(--spring);
+        }
+        .square-card.controls-open .card-img-display { transform: scale(0.75) translateY(10px); }
+
         .card-icon-container { font-size: 3rem; color: var(--primary); margin-bottom: 8px; filter: drop-shadow(0 3px 0 #000); transition: transform 0.4s var(--spring); display: flex; align-items: center; justify-content: center; }
         .card-icon-container svg { width: 1em; height: 1em; }
 
@@ -439,6 +446,7 @@
             }
         }
         
+        // تعديل كروت الأقسام الرئيسية لتدعم الصور المرفوعة
         function renderCategories() {
             navigationHistory = []; 
             const grid = document.getElementById('categories-grid');
@@ -446,8 +454,14 @@
             menuData.forEach(cat => {
                 const card = document.createElement('div');
                 card.className = 'square-card';
+                
+                // فحص إذا كان القسم يمتلك صورة مرفوعة من الـ CMS
+                let visualContent = cat.image 
+                    ? `<img src="${cat.image}" class="card-img-display" alt="${cat.title}">` 
+                    : `<div class="card-icon-container">${getIconHTML(cat.icon)}</div>`;
+
                 card.innerHTML = `<div class="card-main">
-                                    <div class="card-icon-container">${getIconHTML(cat.icon)}</div>
+                                    ${visualContent}
                                     <div class="card-name">${cat.title}</div>
                                   </div>`;
                 card.onclick = () => openCategory(cat);
@@ -461,6 +475,7 @@
             renderCurrentLevel(category);
         }
 
+        // تعديل عرض الأصناف والأقسام الفرعية لتدعم الصور المرفوعة
         function renderCurrentLevel(category) {
             viewCategories.classList.remove('active');
             setTimeout(() => {
@@ -471,8 +486,14 @@
                     category.subCategories.forEach(sub => {
                         const card = document.createElement('div');
                         card.className = 'square-card';
+                        
+                        // فحص صورة القسم الفرعي
+                        let subVisual = sub.image 
+                            ? `<img src="${sub.image}" class="card-img-display" alt="${sub.title}">` 
+                            : `<div class="card-icon-container">${getIconHTML(sub.icon)}</div>`;
+
                         card.innerHTML = `<div class="card-main">
-                                            <div class="card-icon-container">${getIconHTML(sub.icon)}</div>
+                                            ${subVisual}
                                             <div class="card-name">${sub.title}</div>
                                           </div>`;
                         card.onclick = () => openCategory(sub);
@@ -488,9 +509,13 @@
                         const bestsellerHTML = item.bestseller ? `<div class="bestseller-badge">الأكثر طلباً🔥</div>` : '';
                         const priceHTML = item.customPrice ? `<div class="card-price">حدد السعر</div>` : `<div class="card-price">${item.price.toLocaleString()} ل.س</div>`;
                         
+                        // فحص صورة الصنف المرفوعة من الـ CMS، وإذا لم توجد نضع أيقونة القسم الأب كـ Fallback
+                        let itemVisual = item.image 
+                            ? `<img src="${item.image}" class="card-img-display" alt="${item.name}">` 
+                            : `<div class="card-icon-container">${getIconHTML(category.icon)}</div>`;
+
                         let drawerHTML = '';
                         if (item.customPrice) {
-                            // تم إصلاح مشكلة قراءة معرّف الـ input هنا ليعمل برمجياً دون مشاكل مسافات
                             const safeId = item.name.replace(/\s+/g, '');
                             drawerHTML = `
                                 <div class="action-drawer" style="justify-content: center;">
@@ -512,7 +537,7 @@
                                         <div class="added-badge">${qty}</div>
                                         <button class="close-drawer-btn"><i class="fas fa-times"></i></button>
                                         <div class="card-main">
-                                            <div class="card-icon-container">${getIconHTML(category.icon)}</div>
+                                            ${itemVisual}
                                             <div class="card-name">${item.name}</div>
                                             ${priceHTML}
                                         </div>
@@ -566,6 +591,7 @@
                     });
                 }
 
+                // الحفاظ على الأيقونة الافتراضية في ترويسة القسم عند الدخول إليه
                 document.getElementById('category-title').innerHTML = `<span style="font-size: 1.2em; color: var(--primary); display:inline-flex; align-items:center;">${getIconHTML(category.icon)}</span> ${category.title}`;
                 viewItems.classList.add('active'); 
                 btnBack.classList.add('visible');
@@ -574,14 +600,13 @@
 
         btnBack.addEventListener('click', () => {
             navigationHistory.pop(); 
-            
             if (navigationHistory.length > 0) {
                 const previousCategory = navigationHistory[navigationHistory.length - 1];
                 renderCurrentLevel(previousCategory);
             } else {
                 viewItems.classList.remove('active'); 
                 btnBack.classList.remove('visible');
-                setTimeout(() => { viewCategories.add('active'); renderCategories(); }, 300);
+                setTimeout(() => { viewCategories.classList.add('active'); renderCategories(); }, 300);
             }
         });
 
